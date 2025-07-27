@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:dartx/dartx.dart';
 import 'package:isar/isar.dart';
@@ -27,14 +26,13 @@ class ObjectInfo {
   final List<ObjectIndex> indexes;
   final List<ObjectLink> links;
 
-  int get id => xxh3(utf8.encode(isarName) as Uint8List);
+  int get id => xxh3(utf8.encode(isarName));
 
   bool get isEmbedded => accessor == null;
 
   ObjectProperty get idProperty => properties.firstWhere((it) => it.isId);
 
-  List<ObjectProperty> get objectProperties =>
-      properties.where((it) => !it.isId).toList();
+  List<ObjectProperty> get objectProperties => properties.where((it) => !it.isId).toList();
 
   String get getIdName => '_${dartName.decapitalize()}GetId';
   String get getLinksName => '_${dartName.decapitalize()}GetLinks';
@@ -43,8 +41,7 @@ class ObjectInfo {
   String get estimateSizeName => '_${dartName.decapitalize()}EstimateSize';
   String get serializeName => '_${dartName.decapitalize()}Serialize';
   String get deserializeName => '_${dartName.decapitalize()}Deserialize';
-  String get deserializePropName =>
-      '_${dartName.decapitalize()}DeserializeProp';
+  String get deserializePropName => '_${dartName.decapitalize()}DeserializeProp';
 }
 
 enum PropertyDeser {
@@ -129,13 +126,9 @@ class ObjectProperty {
     }
   }
 
-  String get nScalarDartType => isarType.isList
-      ? '$scalarDartType${elementNullable ? '?' : ''}'
-      : '$scalarDartType${nullable ? '?' : ''}';
+  String get nScalarDartType => isarType.isList ? '$scalarDartType${elementNullable ? '?' : ''}' : '$scalarDartType${nullable ? '?' : ''}';
 
-  String get dartType => isarType.isList
-      ? 'List<$nScalarDartType>${nullable ? '?' : ''}'
-      : nScalarDartType;
+  String get dartType => isarType.isList ? 'List<$nScalarDartType>${nullable ? '?' : ''}' : nScalarDartType;
 
   String get targetSchema => '${scalarDartType.capitalize()}Schema';
 
@@ -177,7 +170,7 @@ class ObjectIndex {
   final bool unique;
   final bool replace;
 
-  late final id = xxh3(utf8.encode(name) as Uint8List);
+  late final id = xxh3(utf8.encode(name));
 }
 
 class ObjectLink {
@@ -203,9 +196,9 @@ class ObjectLink {
 
   int id(String objectIsarName) {
     final col = isBacklink ? targetCollectionIsarName : objectIsarName;
-    final colId = xxh3(utf8.encode(col) as Uint8List, seed: isBacklink ? 1 : 0);
+    final colId = xxh3(utf8.encode(col), seed: isBacklink ? 1 : 0);
 
     final name = targetLinkIsarName ?? isarName;
-    return xxh3(utf8.encode(name) as Uint8List, seed: colId);
+    return xxh3(utf8.encode(name), seed: colId);
   }
 }

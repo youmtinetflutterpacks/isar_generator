@@ -27,9 +27,9 @@ extension DartTypeX on DartType {
       }
     } else if (isDartCoreString) {
       return IsarType.string;
-    } else if (_isDateTime(element2!)) {
+    } else if (_isDateTime(element!)) {
       return IsarType.dateTime;
-    } else if (element2!.embeddedAnnotation != null) {
+    } else if (element!.embeddedAnnotation != null) {
       return IsarType.object;
     }
 
@@ -90,18 +90,11 @@ extension DartTypeX on DartType {
 extension IsarTypeX on IsarType {
   bool get containsBool => this == IsarType.bool || this == IsarType.boolList;
 
-  bool get containsFloat =>
-      this == IsarType.float ||
-      this == IsarType.floatList ||
-      this == IsarType.double ||
-      this == IsarType.doubleList;
+  bool get containsFloat => this == IsarType.float || this == IsarType.floatList || this == IsarType.double || this == IsarType.doubleList;
 
-  bool get containsDate =>
-      this == IsarType.dateTime || this == IsarType.dateTimeList;
+  bool get containsDate => this == IsarType.dateTime || this == IsarType.dateTimeList;
 
-  bool get containsString =>
-      this == IsarType.string || this == IsarType.stringList;
+  bool get containsString => this == IsarType.string || this == IsarType.stringList;
 
-  bool get containsObject =>
-      this == IsarType.object || this == IsarType.objectList;
+  bool get containsObject => this == IsarType.object || this == IsarType.objectList;
 }

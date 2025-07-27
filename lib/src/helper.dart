@@ -16,29 +16,21 @@ const TypeChecker _backlinkChecker = TypeChecker.fromRuntime(Backlink);
 extension ClassElementX on ClassElement {
   bool get hasZeroArgsConstructor {
     return constructors.any(
-      (ConstructorElement c) =>
-          c.isPublic &&
-          !c.parameters.any((ParameterElement p) => !p.isOptional),
+      (ConstructorElement c) => c.isPublic && !c.parameters.any((ParameterElement p) => !p.isOptional),
     );
   }
 
   List<PropertyInducingElement> get allAccessors {
-    final ignoreFields =
-        collectionAnnotation?.ignore ?? embeddedAnnotation!.ignore;
+    final ignoreFields = collectionAnnotation?.ignore ?? embeddedAnnotation!.ignore;
     return [
       ...accessors.mapNotNull((e) => e.variable),
       if (collectionAnnotation?.inheritance ?? embeddedAnnotation!.inheritance)
-        for (InterfaceType supertype in allSupertypes) ...[
-          if (!supertype.isDartCoreObject)
-            ...supertype.accessors.mapNotNull((e) => e.variable)
-        ]
+        for (final InterfaceType supertype in allSupertypes) ...[
+          if (!supertype.isDartCoreObject) ...supertype.accessors.mapNotNull((e) => e.variable),
+        ],
     ]
         .where(
-          (PropertyInducingElement e) =>
-              e.isPublic &&
-              !e.isStatic &&
-              !_ignoreChecker.hasAnnotationOf(e.nonSynthetic) &&
-              !ignoreFields.contains(e.name),
+          (PropertyInducingElement e) => e.isPublic && !e.isStatic && !_ignoreChecker.hasAnnotationOf(e.nonSynthetic) && !ignoreFields.contains(e.name),
         )
         .distinctBy((e) => e.name)
         .toList();
@@ -50,9 +42,9 @@ extension ClassElementX on ClassElement {
 }
 
 extension PropertyElementX on PropertyInducingElement {
-  bool get isLink => type.element2!.name == 'IsarLink';
+  bool get isLink => type.element?.name == 'IsarLink';
 
-  bool get isLinks => type.element2!.name == 'IsarLinks';
+  bool get isLinks => type.element?.name == 'IsarLinks';
 
   Enumerated? get enumeratedAnnotation {
     final ann = _enumeratedChecker.firstAnnotationOfExact(nonSynthetic);
@@ -83,8 +75,7 @@ extension PropertyElementX on PropertyInducingElement {
           final indexTypeField = c.getField('type')!;
           IndexType? indexType;
           if (!indexTypeField.isNull) {
-            final indexTypeIndex =
-                indexTypeField.getField('index')!.toIntValue()!;
+            final indexTypeIndex = indexTypeField.getField('index')!.toIntValue()!;
             indexType = IndexType.values[indexTypeIndex];
           }
           composite.add(
@@ -135,11 +126,7 @@ extension ElementX on Element {
     return Collection(
       inheritance: ann.getField('inheritance')!.toBoolValue()!,
       accessor: ann.getField('accessor')!.toStringValue(),
-      ignore: ann
-          .getField('ignore')!
-          .toSetValue()!
-          .map((e) => e.toStringValue()!)
-          .toSet(),
+      ignore: ann.getField('ignore')!.toSetValue()!.map((e) => e.toStringValue()!).toSet(),
     );
   }
 
@@ -164,11 +151,7 @@ extension ElementX on Element {
     }
     return Embedded(
       inheritance: ann.getField('inheritance')!.toBoolValue()!,
-      ignore: ann
-          .getField('ignore')!
-          .toSetValue()!
-          .map((e) => e.toStringValue()!)
-          .toSet(),
+      ignore: ann.getField('ignore')!.toSetValue()!.map((e) => e.toStringValue()!).toSet(),
     );
   }
 }
